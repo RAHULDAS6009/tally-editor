@@ -1,4 +1,5 @@
 "use client"; // this registers <Editor> as a Client Component
+
 import "@blocknote/core/fonts/inter.css";
 import {
   BlockTypeSelectItem,
@@ -21,8 +22,10 @@ import {
   insertOrUpdateBlock,
   PartialBlock,
 } from "@blocknote/core";
-import { Alert } from "./Alert";
+import { Alert } from "./customBlock/Alert";
 import { RiAlertFill } from "react-icons/ri";
+import { CustomSlashMenu } from "./CustomSlashMenu";
+import { InputBox } from "./customBlock/InputBox";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -30,6 +33,8 @@ export const schema = BlockNoteSchema.create({
     ...defaultBlockSpecs,
     // Adds the Alert block.
     alert: Alert,
+    //Adds the Input Block
+    inputbox: InputBox,
   },
 });
 
@@ -57,6 +62,22 @@ const insertAlert = (editor: typeof schema.BlockNoteEditor) => ({
   icon: <RiAlertFill />,
 });
 
+const insertInput = (editor: typeof schema.BlockNoteEditor) => ({
+  title: "inputbox",
+  subtext: "inputbox for emphasizing text",
+  onItemClick: () =>
+    // If the block containing the text caret is empty, `insertOrUpdateBlock`
+    // changes its type to the provided block. Otherwise, it inserts the new
+    // block below and moves the text caret to it. We use this function with an
+    // Alert block.
+    insertOrUpdateBlock(editor, {
+      type: "inputbox",
+    }),
+
+  group: "Basic blocks",
+  icon: <RiAlertFill />,
+});
+
 // Our <Editor> component we can reuse later
 export default function Editor() {
   // Creates a new editor instance.
@@ -73,7 +94,7 @@ export default function Editor() {
       editor={editor}
       formattingToolbar={false}
       slashMenu={false}
-      onChange={() => dispatch(addBlock(editor.document))}
+      onChange={() => dispatch(addBlock(editor.document as PartialBlock[]))}
     >
       {/* Replaces the default Formatting Toolbar */}
       <FormattingToolbarController
@@ -91,6 +112,12 @@ export default function Editor() {
                 icon: RiAlertFill,
                 isSelected: (block) => block.type === "alert",
               } satisfies BlockTypeSelectItem,
+              {
+                name: "inputbox",
+                type: "inputbox",
+                icon: RiAlertFill,
+                isSelected: (block) => block.type === "inputbox",
+              } satisfies BlockTypeSelectItem,
             ]}
           />
         )}
@@ -98,6 +125,7 @@ export default function Editor() {
       {/* Replaces the default Slash Menu. */}
       <SuggestionMenuController
         triggerCharacter={"/"}
+        suggestionMenuComponent={CustomSlashMenu}
         getItems={async (query) => {
           // Gets all default slash menu items.
           const defaultItems = getDefaultReactSlashMenuItems(editor);
@@ -107,6 +135,7 @@ export default function Editor() {
           );
           // Inserts the Alert item as the last item in the "Basic blocks" group.
           defaultItems.splice(lastBasicBlockIndex + 1, 0, insertAlert(editor));
+          defaultItems.splice(lastBasicBlockIndex + 1, 0, insertInput(editor));
 
           // Returns filtered items based on the query.
           return filterSuggestionItems(defaultItems, query);

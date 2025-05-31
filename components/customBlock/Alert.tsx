@@ -3,8 +3,6 @@ import { createReactBlockSpec } from "@blocknote/react";
 import { Menu } from "@mantine/core";
 import { MdCancel, MdCheckCircle, MdError, MdInfo } from "react-icons/md";
 
-import "./style.css";
-
 // The types of alerts that users can choose from.
 export const alertTypes = [
   {
