@@ -11,8 +11,9 @@ export function AddBlockButton(props: SideMenuProps) {
 
   return (
     <Components.SideMenu.Button
+      className="hover:bg-amber-300"
       label="Add block"
-      icon={<MdAdd size={20} />}
+      icon={<MdAdd className="w-20 h-20" />}
       onClick={() => {
         const currentBlock = editor.getTextCursorPosition().block;
 

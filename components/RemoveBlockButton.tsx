@@ -16,7 +16,7 @@ export function RemoveBlockButton(props: SideMenuProps) {
       label="Remove block"
       icon={
         <MdDelete
-          size={24}
+          size={30}
           className="bg-white"
           onClick={() => {
             editor.removeBlocks([props.block]);

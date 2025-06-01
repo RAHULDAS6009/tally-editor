@@ -180,13 +180,15 @@ export default function Editor() {
       /> */}
       <SideMenuController
         sideMenu={(props) => (
-          <SideMenu {...props}>
-            <div className="flex  items-center">
-              <AddBlockButton {...props} />
-              <RemoveBlockButton {...props} />
-              <DragHandleButton {...props} />
-            </div>
-          </SideMenu>
+          <>
+            <SideMenu {...props}>
+              <div className="flex items-center bg-white gap-2  justify-center ">
+                <AddBlockButton {...props} />
+                <RemoveBlockButton {...props} />
+                <DragHandleButton {...props} />
+              </div>
+            </SideMenu>
+          </>
         )}
       />
 
