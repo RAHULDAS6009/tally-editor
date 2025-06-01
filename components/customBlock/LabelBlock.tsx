@@ -1,5 +1,6 @@
 import { defaultProps } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
+import { useState, useEffect } from "react";
 
 const LabelBlock = createReactBlockSpec(
   {
@@ -7,12 +8,33 @@ const LabelBlock = createReactBlockSpec(
     propSchema: {
       textAlignment: defaultProps.textAlignment,
       textColor: defaultProps.textColor,
-      text: { default: "Label" }, // optional if you're using contentRef
+      text: { default: "" },
     },
-    content: "inline", // <-- this defines it can have inline content
+    content: "inline",
   },
   {
     render: (props) => {
+      const [labelText, setLabelText] = useState<string>(
+        props.block.props.text
+      );
+
+      // Persist label text in block props
+      const updateText = (value: string) => {
+        setLabelText(value);
+        props.editor.updateBlock(props.block.id, {
+          props: {
+            ...props.block.props,
+            text: value,
+          },
+        });
+      };
+
+      useEffect(() => {
+        if (!props.editor.isEditable) {
+          setLabelText(props.block.props.text); // sync latest saved text
+        }
+      }, [props.editor.isEditable]);
+
       return (
         <label
           style={{
@@ -21,13 +43,21 @@ const LabelBlock = createReactBlockSpec(
             paddingBottom: "4px",
             display: "block",
             color: "#333",
-            border: "none",
             background: "transparent",
-            outline: "none",
             width: "100%",
           }}
         >
-          <div className="inline-content" ref={props.contentRef} />
+          {props.editor.isEditable ? (
+            <input
+              className="text-sm font-semibold text-gray-800 w-full outline-none bg-transparent"
+              type="text"
+              placeholder="Type the question"
+              value={labelText}
+              onChange={(e) => updateText(e.target.value)}
+            />
+          ) : (
+            <span>{labelText}</span>
+          )}
         </label>
       );
     },

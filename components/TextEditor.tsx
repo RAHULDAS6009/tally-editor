@@ -4,9 +4,12 @@ import "@blocknote/core/fonts/inter.css";
 import {
   BlockTypeSelectItem,
   blockTypeSelectItems,
+  DragHandleButton,
   FormattingToolbar,
   FormattingToolbarController,
   getDefaultReactSlashMenuItems,
+  SideMenu,
+  SideMenuController,
   SuggestionMenuController,
   useCreateBlockNote,
 } from "@blocknote/react";
@@ -27,6 +30,9 @@ import { RiAlertFill } from "react-icons/ri";
 import { CustomSlashMenu } from "./CustomSlashMenu";
 import { InputBox } from "./customBlock/InputBox";
 import LabelBlock from "./customBlock/LabelBlock";
+import { RemoveBlockButton } from "./RemoveBlockButton";
+import { AddBlockButton } from "./AddBlockButton";
+import SelectBlock from "./customBlock/Select";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -37,6 +43,7 @@ export const schema = BlockNoteSchema.create({
     //Adds the Input Block
     inputbox: InputBox,
     labelblock: LabelBlock,
+    selectblock: SelectBlock,
   },
 });
 
@@ -76,17 +83,57 @@ const insertInput = (editor: typeof schema.BlockNoteEditor) => ({
           type: "labelblock",
           content: [{ type: "text", text: "Enter something", styles: {} }],
         },
-        { type: "inputbox" },
+        { type: "inputbox", content: [] },
       ],
       currentBlock,
       "after"
     );
+    const label = editor.document.findLast((b) => b.type === "labelblock");
+    const input = editor.document.findLast((b) => b.type === "inputbox");
+
+    if (label && input) {
+      editor.setSelection(label.id, input.id);
+
+      editor.focus();
+    }
   },
 
   group: "Basic blocks",
   icon: <RiAlertFill />,
 });
 
+const insertSelect = (editor: typeof schema.BlockNoteEditor) => ({
+  title: "selectblock",
+  subtext: "inputbox for emphasizing text",
+  onItemClick: () => {
+    const currentBlock = editor.getTextCursorPosition().block;
+    editor.insertBlocks(
+      [
+        {
+          type: "labelblock",
+          content: [{ type: "text", text: "Enter something", styles: {} }],
+        },
+        {
+          type: "selectblock",
+          content: [{ type: "text", text: "sd", styles: {} }],
+        },
+      ],
+      currentBlock,
+      "after"
+    );
+    const label = editor.document.findLast((b) => b.type === "labelblock");
+    const select = editor.document.findLast((b) => b.type === "selectblock");
+
+    if (label && select) {
+      editor.setSelection(label.id, select.id);
+
+      editor.focus();
+    }
+  },
+
+  group: "Basic blocks",
+  icon: <RiAlertFill />,
+});
 // Our <Editor> component we can reuse later
 export default function Editor() {
   // Creates a new editor instance.
@@ -131,10 +178,22 @@ export default function Editor() {
           />
         )}
       /> */}
+      <SideMenuController
+        sideMenu={(props) => (
+          <SideMenu {...props}>
+            <div className="flex  items-center">
+              <AddBlockButton {...props} />
+              <RemoveBlockButton {...props} />
+              <DragHandleButton {...props} />
+            </div>
+          </SideMenu>
+        )}
+      />
+
       {/* Replaces the default Slash Menu. */}
       <SuggestionMenuController
         triggerCharacter={"/"}
-        suggestionMenuComponent={CustomSlashMenu}
+        // suggestionMenuComponent={CustomSlashMenu}
         getItems={async (query) => {
           // Gets all default slash menu items.
           const defaultItems = getDefaultReactSlashMenuItems(editor);
@@ -144,6 +203,7 @@ export default function Editor() {
           );
           // Inserts the Alert item as the last item in the "Basic blocks" group.
           defaultItems.splice(lastBasicBlockIndex + 1, 0, insertAlert(editor));
+          defaultItems.splice(lastBasicBlockIndex + 1, 0, insertSelect(editor));
           defaultItems.splice(
             lastBasicBlockIndex + 1,
             0,
