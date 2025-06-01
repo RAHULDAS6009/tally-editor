@@ -71,7 +71,13 @@ const insertInput = (editor: typeof schema.BlockNoteEditor) => ({
     const currentBlock = editor.getTextCursorPosition().block;
     console.log(currentBlock);
     editor.insertBlocks(
-      [{ type: "labelblock" }, { type: "inputbox" }],
+      [
+        {
+          type: "labelblock",
+          content: [{ type: "text", text: "Enter something", styles: {} }],
+        },
+        { type: "inputbox" },
+      ],
       currentBlock,
       "after"
     );

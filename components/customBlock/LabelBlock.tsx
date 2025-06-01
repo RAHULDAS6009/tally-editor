@@ -7,9 +7,9 @@ const LabelBlock = createReactBlockSpec(
     propSchema: {
       textAlignment: defaultProps.textAlignment,
       textColor: defaultProps.textColor,
-      text: { default: "Label" },
+      text: { default: "Label" }, // optional if you're using contentRef
     },
-    content: "inline",
+    content: "inline", // <-- this defines it can have inline content
   },
   {
     render: (props) => {
@@ -27,7 +27,7 @@ const LabelBlock = createReactBlockSpec(
             width: "100%",
           }}
         >
-          <div className={"inline-content"} ref={props.contentRef} />
+          <div className="inline-content" ref={props.contentRef} />
         </label>
       );
     },

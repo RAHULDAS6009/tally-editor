@@ -12,29 +12,20 @@ export const InputBox = createReactBlockSpec(
       placeholder: { default: "enter something" },
       value: { default: "" },
     },
-    content: "none",
+    content: "inline",
   },
   {
-    render: ({ block, editor }) => {
-      console.log("important", block.props);
+    render: (props) => {
+      console.log("important", props);
       return (
-        // <div className="input-container">
-        <input
-          className="textinput"
-          type="text"
-          placeholder={block.props.placeholder}
-          value={block.props.value ?? ""}
-          onChange={(e) => {
-            editor.updateBlock(block, {
-              props: {
-                ...block.props,
-                value: e.target.value,
-                // placeholder: e.target.value,
-              },
-            });
-          }}
-        />
-        // </div>
+        <>
+          {/* <input
+            className="textinput"
+            type="text"
+            placeholder={props.block.props.placeholder}
+          /> */}
+          <div className="textinput" ref={props.contentRef} />
+        </>
       );
     },
   }
