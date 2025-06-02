@@ -33,6 +33,8 @@ import LabelBlock from "./customBlock/LabelBlock";
 import { RemoveBlockButton } from "./RemoveBlockButton";
 import { AddBlockButton } from "./AddBlockButton";
 import SelectBlock from "./customBlock/Select";
+import { useState } from "react";
+import { redirect } from "next/navigation";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -143,6 +145,7 @@ const insertSelect = (editor: typeof schema.BlockNoteEditor) => ({
 export default function Editor() {
   // Creates a new editor instance.
   const blocks = useAppSelector((state) => state.blocks.blocks);
+  const [html, setHTML] = useState<String>("");
 
   // if (blocks.length == 0) {
   //   blocks = ;
@@ -154,17 +157,31 @@ export default function Editor() {
 
   console.log(editor.document);
   const dispatch = useAppDispatch();
+  // async function onClick() {
+  //   console.log("start");
+  //   const html = await editor.blocksToHTMLLossy(editor.document);
+  //   setHTML(html);
+  //   localStorage.setItem("html", html);
+  //   redirect("/preview");
+  // }
 
   // Renders the editor instance using a React component.
   return (
-    <BlockNoteView
-      editor={editor}
-      formattingToolbar={false}
-      slashMenu={false}
-      onChange={() => dispatch(addBlock(editor.document as PartialBlock[]))}
-    >
-      {/* Replaces the default Formatting Toolbar */}
-      {/* <FormattingToolbarController
+    <>
+      {/* <button
+        className="border mx-2 px-2 rounded-md py-1 cursor-pointer"
+        onClick={onClick}
+      >
+        publish
+      </button> */}
+      <BlockNoteView
+        editor={editor}
+        formattingToolbar={false}
+        slashMenu={false}
+        onChange={() => dispatch(addBlock(editor.document as PartialBlock[]))}
+      >
+        {/* Replaces the default Formatting Toolbar */}
+        {/* <FormattingToolbarController
         formattingToolbar={() => (
           // Uses the default Formatting Toolbar.
           <FormattingToolbar
@@ -189,45 +206,55 @@ export default function Editor() {
           />
         )}
       /> */}
-      <SideMenuController
-        sideMenu={(props) => (
-          <>
-            <SideMenu {...props}>
-              <div className="flex items-center bg-white gap-2  justify-center ">
-                <AddBlockButton {...props} />
-                <RemoveBlockButton {...props} />
-                <DragHandleButton {...props} />
-              </div>
-            </SideMenu>
-          </>
-        )}
-      />
+        <SideMenuController
+          sideMenu={(props) => (
+            <>
+              <SideMenu {...props}>
+                <div className="flex items-center bg-white gap-2  justify-center ">
+                  <AddBlockButton {...props} />
+                  <RemoveBlockButton {...props} />
+                  <DragHandleButton {...props} />
+                </div>
+              </SideMenu>
+            </>
+          )}
+        />
 
-      {/* Replaces the default Slash Menu. */}
-      <SuggestionMenuController
-        triggerCharacter={"/"}
-        // suggestionMenuComponent={CustomSlashMenu}
-        getItems={async (query) => {
-          // Gets all default slash menu items.
-          const defaultItems = getDefaultReactSlashMenuItems(editor);
-          // Finds index of last item in "Basic blocks" group.
-          const lastBasicBlockIndex = defaultItems.findLastIndex(
-            (item) => item.group === "Basic blocks"
-          );
-          // Inserts the Alert item as the last item in the "Basic blocks" group.
-          defaultItems.splice(lastBasicBlockIndex + 1, 0, insertAlert(editor));
-          defaultItems.splice(lastBasicBlockIndex + 1, 0, insertSelect(editor));
-          defaultItems.splice(
-            lastBasicBlockIndex + 1,
-            0,
-            insertInput(editor)
-            // insertAlert(editor)
-          );
+        {/* Replaces the default Slash Menu. */}
+        <SuggestionMenuController
+          triggerCharacter={"/"}
+          // suggestionMenuComponent={CustomSlashMenu}
+          getItems={async (query) => {
+            // Gets all default slash menu items.
+            const defaultItems = getDefaultReactSlashMenuItems(editor);
+            // Finds index of last item in "Basic blocks" group.
+            const lastBasicBlockIndex = defaultItems.findLastIndex(
+              (item) => item.group === "Basic blocks"
+            );
+            // Inserts the Alert item as the last item in the "Basic blocks" group.
+            defaultItems.splice(
+              lastBasicBlockIndex + 1,
+              0,
+              insertAlert(editor)
+            );
+            defaultItems.splice(
+              lastBasicBlockIndex + 1,
+              0,
+              insertSelect(editor)
+            );
+            defaultItems.splice(
+              lastBasicBlockIndex + 1,
+              0,
+              insertInput(editor)
+              // insertAlert(editor)
+            );
 
-          // Returns filtered items based on the query.
-          return filterSuggestionItems(defaultItems, query);
-        }}
-      />
-    </BlockNoteView>
+            // Returns filtered items based on the query.
+            return filterSuggestionItems(defaultItems, query);
+          }}
+        />
+      </BlockNoteView>
+      <button className="bg-slate-700 p-2 rounded-md text-white">submit</button>
+    </>
   );
 }

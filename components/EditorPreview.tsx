@@ -34,6 +34,7 @@ export default function EditorPreview({
       <button className="cursor-pointer" onClick={() => setOpen(false)}>
         Back to editor
       </button>
+
       <BlockNoteView editor={editor} editable={false} />
     </>
   );
