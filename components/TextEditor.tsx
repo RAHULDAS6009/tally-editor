@@ -115,6 +115,11 @@ const insertSelect = (editor: typeof schema.BlockNoteEditor) => ({
         },
         {
           type: "selectblock",
+          props: {
+            text: "",
+            textColor: "default",
+            textAlignment: "left",
+          },
           content: [{ type: "text", text: "sd", styles: {} }],
         },
       ],
