@@ -9,13 +9,18 @@ import { useEffect } from "react";
 import { redirect } from "next/navigation";
 
 // Our <Editor> component we can reuse later
-export default function EditorPreview() {
+export default function EditorPreview({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (x: boolean) => void;
+}) {
   // Creates a new editor instance.
   const blocks = useAppSelector((state) => state.blocks.blocks);
   console.log();
   if (blocks.length === 0) {
-    console.log("no block");
-    redirect("/formbuilder");
+    return;
   }
 
   const editor = useCreateBlockNote({
@@ -24,5 +29,12 @@ export default function EditorPreview() {
   });
 
   // Renders the editor instance using a React component.
-  return <BlockNoteView editor={editor} editable={false} />;
+  return (
+    <>
+      <button className="cursor-pointer" onClick={() => setOpen(false)}>
+        Back to editor
+      </button>
+      <BlockNoteView editor={editor} editable={false} />
+    </>
+  );
 }

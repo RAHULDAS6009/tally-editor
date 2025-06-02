@@ -7,7 +7,7 @@ export interface Blocks {
 }
 
 const initialState: Blocks = {
-  blocks: [],
+  blocks: [{ type: "paragraph", content: "" }],
 };
 
 export const blockSlice = createSlice({

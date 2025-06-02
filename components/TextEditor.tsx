@@ -16,7 +16,7 @@ import {
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { addBlock } from "@/slices/BlockSlice";
-import { useAppDispatch } from "@/hook";
+import { useAppDispatch, useAppSelector } from "@/hook";
 import {
   Block,
   BlockNoteSchema,
@@ -137,8 +137,14 @@ const insertSelect = (editor: typeof schema.BlockNoteEditor) => ({
 // Our <Editor> component we can reuse later
 export default function Editor() {
   // Creates a new editor instance.
+  const blocks = useAppSelector((state) => state.blocks.blocks);
+
+  // if (blocks.length == 0) {
+  //   blocks = ;
+  // }
   const editor = useCreateBlockNote({
     schema,
+    initialContent: blocks,
   });
 
   console.log(editor.document);
